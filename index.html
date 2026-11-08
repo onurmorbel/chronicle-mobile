@@ -311,8 +311,13 @@
     <div class="brand">
       <img src="icon.jpg" alt="Chronicle Hive" onerror="this.style.display='none'">
       <div class="brand-title">
-        <h1>Chronicle Mobile</h1>
-        <p><span id="connDot">🟢</span> 7/24 Bulut Otomasyonu Aktif</p>
+        <select id="mobChannelSelect" onchange="onMobChannelChange(this.value)" style="background:#14172b;color:#00ff88;border:1px solid #00e5ff;padding:5px 8px;border-radius:8px;font-size:13px;font-weight:800;outline:none;">
+          <option value="chronicle_hive">🏛️ Chronicle Hive</option>
+          <option value="astra_void">🌌 Astra Void</option>
+          <option value="psyche_decoded">🧠 Psyche Decoded</option>
+          <option value="empire_pulse">💰 Empire Pulse</option>
+        </select>
+        <p style="margin-top:3px;"><span id="connDot">🟢</span> 7/24 Bulut Aktif</p>
       </div>
     </div>
     <button class="refresh-btn" onclick="loadAllData(true)">🔄</button>
@@ -518,6 +523,16 @@
       return JSON.parse(decoded);
     }
 
+    let activeChannelId = localStorage.getItem('ch_active_channel') || 'chronicle_hive';
+    document.getElementById('mobChannelSelect').value = activeChannelId;
+
+    function onMobChannelChange(val) {
+      activeChannelId = val;
+      localStorage.setItem('ch_active_channel', val);
+      showToast('📺 Kanal değiştirildi: ' + val);
+      loadAllData(true);
+    }
+
     async function triggerCloudWorkflow(mode, customTopicOverride = null) {
       const { owner, repo, token } = getCfg();
       if (!token) {
@@ -544,6 +559,7 @@
           body: JSON.stringify({
             ref: 'main',
             inputs: {
+              channel_id: activeChannelId,
               mode: mode,
               custom_topic: topicVal
             }
@@ -607,10 +623,11 @@
       loadWorkflowRuns();
 
       try {
+        const prefix = activeChannelId === 'chronicle_hive' ? 'output' : `output/channels/${activeChannelId}`;
         const [history, videos, actions] = await Promise.all([
-          ghFetchJsonFile('output/growth_history.json').catch(() => []),
-          ghFetchJsonFile('output/uploaded_videos.json').catch(() => []),
-          ghFetchJsonFile('output/ai_actions.json').catch(() => [])
+          ghFetchJsonFile(`${prefix}/growth_history.json`).catch(() => []),
+          ghFetchJsonFile(`${prefix}/uploaded_videos.json`).catch(() => []),
+          ghFetchJsonFile(`${prefix}/ai_actions.json`).catch(() => [])
         ]);
 
         document.getElementById('connDot').innerText = '🟢';
