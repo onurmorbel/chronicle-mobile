@@ -626,7 +626,8 @@
         const vBox = document.getElementById('mobileVideoList');
         vBox.innerHTML = '';
         videos.slice().reverse().forEach(v => {
-          const sched = v.scheduled_for
+          const isPending = v.scheduled_for && v.scheduled_for !== 'Immediate Public' && new Date(v.scheduled_for.replace(' ', 'T')) > new Date();
+          const sched = isPending
             ? `<span class="badge badge-amber">⏳ Planlandı: ${v.scheduled_for}</span>`
             : `<span class="badge badge-green">🟢 Yayında</span>`;
           const item = document.createElement('div');
@@ -672,3 +673,4 @@
   </script>
 </body>
 </html>
+
