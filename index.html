@@ -1,0 +1,674 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Chronicle">
+  <meta name="theme-color" content="#0b0c14">
+  <link rel="manifest" href="manifest.json">
+  <link rel="apple-touch-icon" href="icon.jpg">
+  <title>Chronicle Hive Mobile</title>
+  <style>
+    :root {
+      --bg: #0b0c14;
+      --card: #151726;
+      --border: #252842;
+      --cyan: #00e5ff;
+      --green: #00ff88;
+      --red: #ff3355;
+      --amber: #ffb74d;
+      --text: #f0f2ff;
+      --sub: #8e92b8;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      padding-bottom: 90px;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    /* Header */
+    .app-header {
+      position: sticky;
+      top: 0;
+      z-index: 50;
+      background: rgba(11, 12, 20, 0.92);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+      padding: 14px 18px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .brand { display: flex; align-items: center; gap: 10px; }
+    .brand img { width: 36px; height: 36px; border-radius: 50%; border: 1.5px solid var(--cyan); object-fit: cover; }
+    .brand-title h1 { font-size: 16px; font-weight: 800; letter-spacing: 0.3px; }
+    .brand-title p { font-size: 11px; color: var(--green); font-weight: 600; display: flex; align-items: center; gap: 4px; }
+    .refresh-btn {
+      background: #1c1f33;
+      border: 1px solid var(--border);
+      color: var(--text);
+      width: 36px;
+      height: 36px;
+      border-radius: 10px;
+      font-size: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+    }
+
+    .container { padding: 16px; max-width: 520px; margin: 0 auto; }
+
+    /* Cards */
+    .card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 16px;
+      margin-bottom: 14px;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.35);
+    }
+    .card-title {
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--cyan);
+      text-transform: uppercase;
+      letter-spacing: 0.6px;
+      margin-bottom: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    /* Quick Stats */
+    .stats-row {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+      margin-bottom: 14px;
+    }
+    .stat-box {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 12px 10px;
+      text-align: center;
+    }
+    .stat-num { font-size: 20px; font-weight: 800; color: #fff; margin-bottom: 3px; }
+    .stat-lbl { font-size: 10.5px; color: var(--sub); font-weight: 600; }
+
+    /* Form Controls */
+    .input-label { font-size: 12px; color: var(--sub); margin-bottom: 6px; display: block; font-weight: 600; }
+    .text-input {
+      width: 100%;
+      background: #0d0f1a;
+      border: 1px solid var(--border);
+      color: #fff;
+      padding: 13px 14px;
+      border-radius: 12px;
+      font-size: 14px;
+      margin-bottom: 12px;
+      outline: none;
+    }
+    .text-input:focus { border-color: var(--cyan); }
+
+    /* Topic Chips */
+    .chips-scroll {
+      display: flex;
+      gap: 8px;
+      overflow-x: auto;
+      padding-bottom: 8px;
+      margin-bottom: 12px;
+      scrollbar-width: none;
+    }
+    .chips-scroll::-webkit-scrollbar { display: none; }
+    .chip {
+      background: #1d2036;
+      border: 1px solid #2e3354;
+      color: #d0d4f5;
+      padding: 7px 12px;
+      border-radius: 20px;
+      font-size: 11.5px;
+      white-space: nowrap;
+      cursor: pointer;
+    }
+    .chip:active { background: var(--cyan); color: #000; font-weight: 700; }
+
+    /* Primary Action Button */
+    .btn-main {
+      width: 100%;
+      background: linear-gradient(135deg, #00e5ff, #00ff88);
+      color: #060814;
+      border: none;
+      padding: 15px;
+      border-radius: 14px;
+      font-size: 15px;
+      font-weight: 800;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      cursor: pointer;
+      box-shadow: 0 6px 20px rgba(0, 229, 255, 0.25);
+    }
+    .btn-main:disabled { opacity: 0.5; }
+    .btn-sec {
+      width: 100%;
+      background: #1e2238;
+      color: var(--text);
+      border: 1px solid var(--border);
+      padding: 12px;
+      border-radius: 12px;
+      font-size: 13px;
+      font-weight: 700;
+      margin-top: 10px;
+      cursor: pointer;
+    }
+
+    /* Live Run Banner */
+    .run-status {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 12px 14px;
+      border-radius: 12px;
+      background: #101322;
+      border: 1px solid #252a48;
+      margin-bottom: 10px;
+    }
+    .badge {
+      padding: 4px 8px;
+      border-radius: 6px;
+      font-size: 10.5px;
+      font-weight: 700;
+    }
+    .badge-green { background: rgba(0,255,136,0.15); color: var(--green); }
+    .badge-amber { background: rgba(255,183,77,0.18); color: var(--amber); }
+    .badge-red { background: rgba(255,51,85,0.2); color: var(--red); }
+
+    /* AI Advisor Cards */
+    .ai-item {
+      background: #101221;
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 14px;
+      margin-bottom: 12px;
+    }
+    .ai-item.critical {
+      border-color: var(--red);
+      background: linear-gradient(145deg, rgba(255,42,75,0.12), #101221);
+    }
+    .must-badge {
+      display: inline-block;
+      background: var(--red);
+      color: #fff;
+      font-size: 10px;
+      font-weight: 800;
+      padding: 3px 8px;
+      border-radius: 5px;
+      margin-bottom: 8px;
+      text-transform: uppercase;
+    }
+    .opt-badge {
+      display: inline-block;
+      background: rgba(0,229,255,0.15);
+      color: var(--cyan);
+      font-size: 10px;
+      font-weight: 700;
+      padding: 3px 8px;
+      border-radius: 5px;
+      margin-bottom: 8px;
+    }
+    .ai-title { font-size: 14px; font-weight: 700; margin-bottom: 6px; color: #fff; }
+    .ai-desc { font-size: 12px; color: var(--sub); line-height: 1.45; margin-bottom: 12px; }
+    .btn-apply-sm {
+      width: 100%;
+      background: linear-gradient(135deg, #00ff88, #00b862);
+      color: #04120a;
+      border: none;
+      padding: 11px;
+      border-radius: 10px;
+      font-weight: 800;
+      font-size: 13px;
+      cursor: pointer;
+    }
+
+    /* Video Item */
+    .vid-item {
+      padding: 12px 0;
+      border-bottom: 1px solid #1f2238;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+    .vid-item:last-child { border-bottom: none; }
+    .vid-title { font-size: 13.5px; font-weight: 700; color: #fff; line-height: 1.35; }
+    .vid-meta { display: flex; align-items: center; justify-content: space-between; font-size: 11.5px; color: var(--sub); }
+
+    /* Bottom Navigation */
+    .bottom-nav {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background: rgba(15, 17, 29, 0.96);
+      backdrop-filter: blur(14px);
+      border-top: 1px solid var(--border);
+      display: flex;
+      justify-content: space-around;
+      padding: 8px 6px calc(8px + env(safe-area-inset-bottom));
+      z-index: 90;
+    }
+    .nav-item {
+      flex: 1;
+      background: none;
+      border: none;
+      color: var(--sub);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+      font-size: 10.5px;
+      font-weight: 600;
+      padding: 6px 0;
+      cursor: pointer;
+    }
+    .nav-item.active { color: var(--cyan); }
+    .nav-icon { font-size: 19px; }
+
+    /* Toast */
+    .toast {
+      position: fixed;
+      top: 74px;
+      left: 16px;
+      right: 16px;
+      background: #161b33;
+      border: 1px solid var(--cyan);
+      color: #fff;
+      padding: 13px 16px;
+      border-radius: 12px;
+      font-size: 13px;
+      font-weight: 600;
+      z-index: 200;
+      display: none;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.7);
+      text-align: center;
+    }
+
+    .page { display: none; }
+    .page.active { display: block; }
+  </style>
+</head>
+<body>
+
+  <header class="app-header">
+    <div class="brand">
+      <img src="icon.jpg" alt="Chronicle Hive" onerror="this.style.display='none'">
+      <div class="brand-title">
+        <h1>Chronicle Mobile</h1>
+        <p><span id="connDot">🟢</span> 7/24 Bulut Otomasyonu Aktif</p>
+      </div>
+    </div>
+    <button class="refresh-btn" onclick="loadAllData(true)">🔄</button>
+  </header>
+
+  <div class="toast" id="toastBox"></div>
+
+  <div class="container">
+
+    <!-- QUICK STATS ROW -->
+    <div class="stats-row">
+      <div class="stat-box">
+        <div class="stat-num" id="stViews">-</div>
+        <div class="stat-lbl">👁️ İzlenme</div>
+      </div>
+      <div class="stat-box">
+        <div class="stat-num" id="stSubs">-</div>
+        <div class="stat-lbl">👥 Abone</div>
+      </div>
+      <div class="stat-box">
+        <div class="stat-num" id="stVids">-</div>
+        <div class="stat-lbl">🎬 Shorts</div>
+      </div>
+    </div>
+
+    <!-- PAGE 1: TEK TIKLA VIDEO URET -->
+    <div class="page active" id="pageProduce">
+      <div class="card">
+        <div class="card-title">
+          <span>⚡ BULUTTA TEK TIKLA VİDEO ÜRET</span>
+          <span class="badge badge-green">Bilgisayar Bağımsız</span>
+        </div>
+        <label class="input-label">Konu Başlığı (Boş bırakırsanız AI kendi seçer):</label>
+        <input type="text" id="topicInput" class="text-input" placeholder="Örn: The Voynich Manuscript...">
+
+        <div class="input-label">🔥 Hazır Viral Konular (Dokun & Seç):</div>
+        <div class="chips-scroll">
+          <div class="chip" onclick="setTopic('The Voynich Manuscript: World\'s Most Mysterious Book')">📘 Voynich El Yazması</div>
+          <div class="chip" onclick="setTopic('The Tunguska Event: The Siberian Blast Without a Crater')">☄️ Tunguska Patlaması</div>
+          <div class="chip" onclick="setTopic('The Baghdad Battery: 2,000-Year-Old Ancient Electricity')">🔋 Bağdat Pili</div>
+          <div class="chip" onclick="setTopic('Göbekli Tepe: The 11,500-Year-Old Stone Mystery')">🗿 Göbekli Tepe</div>
+          <div class="chip" onclick="setTopic('The Wow! Signal: Deep Space Extraterrestrial Mystery')">📡 Wow! Uzay Sinyali</div>
+        </div>
+
+        <button class="btn-main" id="btnProduce" onclick="triggerCloudWorkflow('produce_and_upload')">
+          🚀 Bulutta Üret & YouTube'a Planla
+        </button>
+        <p style="font-size: 11px; color: var(--sub); text-align: center; margin-top: 10px; line-height: 1.4;">
+          Video GitHub bulut sunucusunda ~3 dakikada üretilir ve YouTube'a <b>2 saat AI indeksleme (Planlandı)</b> olarak yüklenir.
+        </p>
+      </div>
+
+      <!-- CANLI BULUT ISLEM DURUMU -->
+      <div class="card">
+        <div class="card-title">
+          <span>☁️ SON BULUT İŞLEMLERİ (CANLI)</span>
+          <span style="font-size: 11px; color: var(--sub);">GitHub Actions</span>
+        </div>
+        <div id="runsContainer">
+          <div style="text-align:center; color:var(--sub); font-size:12px; padding:12px;">Yükleniyor...</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- PAGE 2: AI BUYUME DANISMANI -->
+    <div class="page" id="pageAdvisor">
+      <div class="card">
+        <div class="card-title">
+          <span>🤖 AI BÜYÜME DANIŞMANI</span>
+          <span class="badge badge-red">Otonom Aksiyon</span>
+        </div>
+        <div id="aiMobileList">
+          <div style="text-align:center; color:var(--sub); font-size:12px; padding:14px;">Öneriler yükleniyor...</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- PAGE 3: YAYINDAKI VIDEOLAR -->
+    <div class="page" id="pageVideos">
+      <div class="card">
+        <div class="card-title">
+          <span>📊 YAYINDAKİ & PLANLI VİDEOLAR</span>
+          <button onclick="triggerCloudWorkflow('analyze_only')" style="background:none;border:none;color:var(--cyan);font-size:11px;font-weight:700;cursor:pointer;">⚡ Şimdi Analiz Et</button>
+        </div>
+        <div id="mobileVideoList">
+          <div style="text-align:center; color:var(--sub); font-size:12px; padding:14px;">Videolar yükleniyor...</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- PAGE 4: AYARLAR & ESLESTIRME -->
+    <div class="page" id="pageSettings">
+      <div class="card">
+        <div class="card-title"><span>🔐 BULUT BAĞLANTI AYARLARI</span></div>
+        <label class="input-label">GitHub Kullanıcı Adı:</label>
+        <input type="text" id="cfgOwner" class="text-input" value="onurmorbel">
+        <label class="input-label">Depo Adı (Repository):</label>
+        <input type="text" id="cfgRepo" class="text-input" value="chronicle-hive-automation">
+        <label class="input-label">GitHub Erişim Anahtarı (QR ile Otomatik Doldu):</label>
+        <input type="password" id="cfgToken" class="text-input" placeholder="gho_...">
+        <button class="btn-main" onclick="saveSettings()">💾 Bağlantıyı Kaydet</button>
+      </div>
+
+      <div class="card">
+        <div class="card-title"><span>📲 TELEFONA UYGULAMA OLARAK KURULUM</span></div>
+        <p style="font-size: 12.5px; color: var(--sub); line-height: 1.6;">
+          • <b>iPhone (Safari):</b> Alt ortadaki <b>Paylaş (⬆️)</b> butonuna dokunun ve <b>"Ana Ekrana Ekle"</b> seçeneğini seçin.<br><br>
+          • <b>Android (Chrome):</b> Sağ üstteki <b>Üç Nokta (⋮)</b> menüsüne dokunun ve <b>"Ana ekrana ekle / Uygulamayı yükle"</b> seçeneğini seçin.
+        </p>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- BOTTOM NAVIGATION -->
+  <nav class="bottom-nav">
+    <button class="nav-item active" id="navProduce" onclick="switchTab('Produce')">
+      <span class="nav-icon">🎬</span>
+      <span>Video Üret</span>
+    </button>
+    <button class="nav-item" id="navAdvisor" onclick="switchTab('Advisor')">
+      <span class="nav-icon">🤖</span>
+      <span>AI Danışman</span>
+    </button>
+    <button class="nav-item" id="navVideos" onclick="switchTab('Videos')">
+      <span class="nav-icon">📊</span>
+      <span>Videolarım</span>
+    </button>
+    <button class="nav-item" id="navSettings" onclick="switchTab('Settings')">
+      <span class="nav-icon">⚙️</span>
+      <span>Bağlantı</span>
+    </button>
+  </nav>
+
+  <script>
+    // 1. Auto-pair from QR Code URL hash (#token=...&owner=...)
+    (function initPairing() {
+      if (window.location.hash && window.location.hash.length > 2) {
+        const params = new URLSearchParams(window.location.hash.substring(1));
+        if (params.get('token')) {
+          localStorage.setItem('ch_gh_token', params.get('token'));
+        }
+        if (params.get('owner')) {
+          localStorage.setItem('ch_gh_owner', params.get('owner'));
+        }
+        if (params.get('repo')) {
+          localStorage.setItem('ch_gh_repo', params.get('repo'));
+        }
+        // Clean token from URL bar immediately for security
+        history.replaceState(null, null, window.location.pathname);
+      }
+      document.getElementById('cfgOwner').value = localStorage.getItem('ch_gh_owner') || 'onurmorbel';
+      document.getElementById('cfgRepo').value = localStorage.getItem('ch_gh_repo') || 'chronicle-hive-automation';
+      document.getElementById('cfgToken').value = localStorage.getItem('ch_gh_token') || '';
+    })();
+
+    function getCfg() {
+      return {
+        owner: localStorage.getItem('ch_gh_owner') || 'onurmorbel',
+        repo: localStorage.getItem('ch_gh_repo') || 'chronicle-hive-automation',
+        token: localStorage.getItem('ch_gh_token') || ''
+      };
+    }
+
+    function saveSettings() {
+      localStorage.setItem('ch_gh_owner', document.getElementById('cfgOwner').value.trim());
+      localStorage.setItem('ch_gh_repo', document.getElementById('cfgRepo').value.trim());
+      localStorage.setItem('ch_gh_token', document.getElementById('cfgToken').value.trim());
+      showToast('✅ Bulut bağlantısı kaydedildi!');
+      loadAllData(true);
+    }
+
+    function showToast(msg) {
+      const t = document.getElementById('toastBox');
+      t.innerText = msg;
+      t.style.display = 'block';
+      setTimeout(() => { t.style.display = 'none'; }, 3800);
+    }
+
+    function switchTab(name) {
+      ['Produce', 'Advisor', 'Videos', 'Settings'].forEach(p => {
+        document.getElementById('page' + p).classList.toggle('active', p === name);
+        document.getElementById('nav' + p).classList.toggle('active', p === name);
+      });
+    }
+
+    function setTopic(t) {
+      document.getElementById('topicInput').value = t;
+      showToast('🎯 Konu seçildi: ' + t.split(':')[0]);
+    }
+
+    async function ghFetchJsonFile(path) {
+      const { owner, repo, token } = getCfg();
+      const res = await fetch(`https://api.github.com/repos/${owner}/${repo}/contents/${path}?t=${Date.now()}`, {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Accept': 'application/vnd.github+json'
+        }
+      });
+      if (!res.ok) throw new Error('API Error ' + res.status);
+      const data = await res.json();
+      const decoded = decodeURIComponent(escape(atob(data.content.replace(/\n/g, ''))));
+      return JSON.parse(decoded);
+    }
+
+    async function triggerCloudWorkflow(mode, customTopicOverride = null) {
+      const { owner, repo, token } = getCfg();
+      if (!token) {
+        showToast('⚠️ Lütfen önce Bağlantı sekmesinden veya QR kod ile eşleştirin.');
+        switchTab('Settings');
+        return;
+      }
+      const btn = document.getElementById('btnProduce');
+      if (btn) btn.disabled = true;
+
+      const topicVal = customTopicOverride !== null
+        ? customTopicOverride
+        : document.getElementById('topicInput').value.trim();
+
+      try {
+        showToast('☁️ Bulut sunucusuna komut gönderiliyor...');
+        const res = await fetch(`https://api.github.com/repos/${owner}/${repo}/actions/workflows/cloud_automation.yml/dispatches`, {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Accept': 'application/vnd.github+json',
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            ref: 'main',
+            inputs: {
+              mode: mode,
+              custom_topic: topicVal
+            }
+          })
+        });
+
+        if (res.status === 204 || res.ok) {
+          showToast('🚀 Bulut üretimi başlatıldı! (~3 dk içinde YouTube\'a yüklenecek)');
+          document.getElementById('topicInput').value = '';
+          setTimeout(() => loadWorkflowRuns(), 3500);
+        } else {
+          showToast('❌ Hata oluştu: Kod ' + res.status);
+        }
+      } catch (e) {
+        showToast('❌ Bağlantı hatası: ' + e.message);
+      } finally {
+        if (btn) btn.disabled = false;
+      }
+    }
+
+    async function loadWorkflowRuns() {
+      const { owner, repo, token } = getCfg();
+      if (!token) return;
+      try {
+        const res = await fetch(`https://api.github.com/repos/${owner}/${repo}/actions/runs?per_page=5&t=${Date.now()}`, {
+          headers: { 'Authorization': `Bearer ${token}`, 'Accept': 'application/vnd.github+json' }
+        });
+        const data = await res.json();
+        const box = document.getElementById('runsContainer');
+        box.innerHTML = '';
+        (data.workflow_runs || []).forEach(r => {
+          let badge = '<span class="badge badge-amber">⏳ Çalışıyor...</span>';
+          if (r.status === 'completed') {
+            badge = r.conclusion === 'success'
+              ? '<span class="badge badge-green">✅ Tamamlandı</span>'
+              : '<span class="badge badge-red">❌ Hata</span>';
+          }
+          const dt = new Date(r.created_at).toLocaleString('tr-TR', { day:'2-digit', month:'2-digit', hour:'2-digit', minute:'2-digit' });
+          const div = document.createElement('div');
+          div.className = 'run-status';
+          div.innerHTML = `
+            <div>
+              <div style="font-size:13px;font-weight:700;color:#fff;">Bulut Görevi #${r.run_number}</div>
+              <div style="font-size:11px;color:var(--sub);">${dt} • ${r.event === 'workflow_dispatch' ? 'Mobil Tetikleme' : 'Otomatik Zamanlayıcı'}</div>
+            </div>
+            ${badge}
+          `;
+          box.appendChild(div);
+        });
+      } catch (e) {}
+    }
+
+    async function loadAllData(manual = false) {
+      const { token } = getCfg();
+      if (!token) {
+        document.getElementById('connDot').innerText = '🔴';
+        return;
+      }
+      if (manual) showToast('🔄 Bulut verileri güncelleniyor...');
+
+      loadWorkflowRuns();
+
+      try {
+        const [history, videos, actions] = await Promise.all([
+          ghFetchJsonFile('output/growth_history.json').catch(() => []),
+          ghFetchJsonFile('output/uploaded_videos.json').catch(() => []),
+          ghFetchJsonFile('output/ai_actions.json').catch(() => [])
+        ]);
+
+        document.getElementById('connDot').innerText = '🟢';
+
+        if (history.length > 0) {
+          const latest = history[history.length - 1];
+          document.getElementById('stViews').innerText = latest.total_views ?? 0;
+          document.getElementById('stSubs').innerText = (latest.subscribers || '0').replace(' subscribers', '');
+        }
+        document.getElementById('stVids').innerText = videos.length;
+
+        // Render Videos
+        const vBox = document.getElementById('mobileVideoList');
+        vBox.innerHTML = '';
+        videos.slice().reverse().forEach(v => {
+          const sched = v.scheduled_for
+            ? `<span class="badge badge-amber">⏳ Planlandı: ${v.scheduled_for}</span>`
+            : `<span class="badge badge-green">🟢 Yayında</span>`;
+          const item = document.createElement('div');
+          item.className = 'vid-item';
+          item.innerHTML = `
+            <div class="vid-title">${v.title}</div>
+            <div class="vid-meta">
+              ${sched}
+              <a href="${v.url}" target="_blank" style="color:var(--cyan);font-weight:700;text-decoration:none;">▶ YouTube'da Aç</a>
+            </div>
+          `;
+          vBox.appendChild(item);
+        });
+
+        // Render AI Actions
+        const aBox = document.getElementById('aiMobileList');
+        aBox.innerHTML = '';
+        const activeActions = actions.filter(a => a.status !== 'dismissed');
+        activeActions.forEach(act => {
+          const isCrit = act.priority === 'critical';
+          const isApp = act.status === 'applied';
+          const topicParam = (act.payload && act.payload.topic) ? act.payload.topic.replace(/'/g, "\\'") : '';
+          const div = document.createElement('div');
+          div.className = `ai-item ${isCrit ? 'critical' : ''}`;
+          div.innerHTML = `
+            <div>${isCrit ? '<span class="must-badge">🚨 MUTLAKA YAPILMALI</span>' : '<span class="opt-badge">💡 İSTEĞE BAĞLI ÖNERİ</span>'}</div>
+            <div class="ai-title">${act.title}</div>
+            <div class="ai-desc">${act.description}</div>
+            <button class="btn-apply-sm" ${isApp ? 'disabled style="opacity:0.5"' : ''} onclick="triggerCloudWorkflow('produce_and_upload', '${topicParam}')">
+              ${isApp ? '✅ Uygulandı' : '⚡ Bulutta Hemen Uygula'}
+            </button>
+          `;
+          aBox.appendChild(div);
+        });
+
+      } catch (e) {
+        console.error(e);
+      }
+    }
+
+    loadAllData(false);
+    setInterval(() => loadWorkflowRuns(), 15000);
+  </script>
+</body>
+</html>
