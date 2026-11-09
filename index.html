@@ -4,7 +4,24 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
   <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+  <meta http-equiv="Pragma" content="no-cache">
+  <meta http-equiv="Expires" content="0">
+  <script>
+    // Self-update: iOS home-screen apps cache old HTML aggressively.
+    window.APP_VERSION = '2026.11.09-v3';
+    (function checkUpdate() {
+      fetch('version.json?t=' + Date.now(), { cache: 'no-store' })
+        .then(r => r.ok ? r.json() : null)
+        .then(v => {
+          if (v && v.version && v.version !== window.APP_VERSION) {
+            const url = window.location.pathname + '?v=' + encodeURIComponent(v.version) + window.location.hash;
+            window.location.replace(url);
+          }
+        }).catch(() => {});
+    })();
+  </script>
   <meta name="apple-mobile-web-app-title" content="Chronicle">
   <meta name="theme-color" content="#0b0c14">
   <link rel="manifest" href="manifest.json">
@@ -41,7 +58,7 @@
       backdrop-filter: blur(16px);
       -webkit-backdrop-filter: blur(16px);
       border-bottom: 1px solid var(--border);
-      padding-top: max(calc(env(safe-area-inset-top) + 14px), 54px);
+      padding-top: calc(env(safe-area-inset-top) + 14px);
       padding-bottom: 14px;
       padding-left: max(16px, env(safe-area-inset-left));
       padding-right: max(16px, env(safe-area-inset-right));
@@ -364,7 +381,7 @@
           <option value="psyche_decoded">🧠 Psyche Decoded</option>
           <option value="empire_pulse">💰 Empire Pulse</option>
         </select>
-        <p style="margin-top:4px;"><span id="connDot">🟢</span> 7/24 Bulut Aktif</p>
+        <p style="margin-top:4px;"><span id="connDot">🟢</span> 7/24 Bulut Aktif <span style="color:#8e92b8;font-weight:500;">• v3</span></p>
       </div>
     </div>
     <button class="refresh-btn" onclick="loadAllData(true)">🔄</button>
