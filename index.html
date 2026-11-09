@@ -10,7 +10,7 @@
   <meta http-equiv="Expires" content="0">
   <script>
     // Self-update: iOS home-screen apps cache old HTML aggressively.
-    window.APP_VERSION = '2026.11.09-v3';
+    window.APP_VERSION = '2026.11.09-v4';
     (function checkUpdate() {
       fetch('version.json?t=' + Date.now(), { cache: 'no-store' })
         .then(r => r.ok ? r.json() : null)
@@ -22,11 +22,12 @@
         }).catch(() => {});
     })();
   </script>
-  <meta name="apple-mobile-web-app-title" content="Chronicle">
+  <meta name="apple-mobile-web-app-title" content="YouTube Otomasyonu">
   <meta name="theme-color" content="#0b0c14">
   <link rel="manifest" href="manifest.json">
-  <link rel="apple-touch-icon" href="icon.jpg">
-  <title>Chronicle Hive Mobile</title>
+  <link rel="apple-touch-icon" href="icon-180.png?v=4">
+  <link rel="icon" type="image/png" href="icon.png?v=4">
+  <title>YouTube Otomasyonu</title>
   <style>
     :root {
       --bg: #0b0c14;
@@ -373,7 +374,7 @@
 
   <header class="app-header">
     <div class="brand">
-      <img src="icon.jpg" alt="Chronicle Hive" onerror="this.style.display='none'">
+      <img src="icon.png?v=4" alt="YouTube Otomasyonu" onerror="this.style.display='none'">
       <div class="brand-title">
         <select id="mobChannelSelect" onchange="onMobChannelChange(this.value)" style="background:#14172b;color:#00ff88;border:1px solid #00e5ff;padding:8px 12px;border-radius:10px;font-size:14px;font-weight:800;outline:none;cursor:pointer;">
           <option value="chronicle_hive">🏛️ Chronicle Hive</option>
@@ -381,7 +382,7 @@
           <option value="psyche_decoded">🧠 Psyche Decoded</option>
           <option value="empire_pulse">💰 Empire Pulse</option>
         </select>
-        <p style="margin-top:4px;"><span id="connDot">🟢</span> 7/24 Bulut Aktif <span style="color:#8e92b8;font-weight:500;">• v3</span></p>
+        <p style="margin-top:4px;"><span id="connDot">🟢</span> 7/24 Bulut Aktif <span style="color:#8e92b8;font-weight:500;">• v4</span></p>
       </div>
     </div>
     <button class="refresh-btn" onclick="loadAllData(true)">🔄</button>
