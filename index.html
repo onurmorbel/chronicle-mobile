@@ -32,35 +32,82 @@
       overflow-x: hidden;
     }
 
-    /* Header */
+    /* Header with iOS Dynamic Island & Notch Safe Area */
     .app-header {
       position: sticky;
       top: 0;
-      z-index: 50;
-      background: rgba(11, 12, 20, 0.92);
-      backdrop-filter: blur(12px);
+      z-index: 100;
+      background: rgba(11, 12, 20, 0.96);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
       border-bottom: 1px solid var(--border);
-      padding: 14px 18px;
+      padding-top: max(calc(env(safe-area-inset-top) + 14px), 54px);
+      padding-bottom: 14px;
+      padding-left: max(16px, env(safe-area-inset-left));
+      padding-right: max(16px, env(safe-area-inset-right));
       display: flex;
       align-items: center;
       justify-content: space-between;
+      touch-action: manipulation;
     }
     .brand { display: flex; align-items: center; gap: 10px; }
-    .brand img { width: 36px; height: 36px; border-radius: 50%; border: 1.5px solid var(--cyan); object-fit: cover; }
-    .brand-title h1 { font-size: 16px; font-weight: 800; letter-spacing: 0.3px; }
-    .brand-title p { font-size: 11px; color: var(--green); font-weight: 600; display: flex; align-items: center; gap: 4px; }
+    .brand img { width: 38px; height: 38px; border-radius: 50%; border: 1.5px solid var(--cyan); object-fit: cover; }
+    .brand-title { display: flex; flex-direction: column; }
+    .brand-title select {
+      -webkit-appearance: none;
+      appearance: none;
+      cursor: pointer;
+      touch-action: manipulation;
+    }
     .refresh-btn {
       background: #1c1f33;
       border: 1px solid var(--border);
       color: var(--text);
-      width: 36px;
-      height: 36px;
-      border-radius: 10px;
-      font-size: 16px;
+      width: 40px;
+      height: 40px;
+      border-radius: 12px;
+      font-size: 18px;
       display: flex;
       align-items: center;
       justify-content: center;
       cursor: pointer;
+      touch-action: manipulation;
+    }
+
+    /* 4-Channel Horizontal Pill Selector */
+    .channel-pill-bar {
+      display: flex;
+      gap: 8px;
+      overflow-x: auto;
+      padding: 4px 2px 14px 2px;
+      margin-bottom: 2px;
+      -webkit-overflow-scrolling: touch;
+      scrollbar-width: none;
+    }
+    .channel-pill-bar::-webkit-scrollbar { display: none; }
+    .channel-pill {
+      background: #14172b;
+      color: #8e92b8;
+      border: 1px solid var(--border);
+      padding: 9px 15px;
+      border-radius: 12px;
+      font-size: 12.5px;
+      font-weight: 700;
+      white-space: nowrap;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.2s ease;
+      flex-shrink: 0;
+      touch-action: manipulation;
+    }
+    .channel-pill:active { transform: scale(0.96); }
+    .channel-pill.active {
+      background: linear-gradient(135deg, rgba(0,229,255,0.22), rgba(0,255,136,0.22));
+      color: #00ff88;
+      border-color: #00e5ff;
+      box-shadow: 0 4px 14px rgba(0,229,255,0.25);
     }
 
     .container { padding: 16px; max-width: 520px; margin: 0 auto; }
@@ -311,13 +358,13 @@
     <div class="brand">
       <img src="icon.jpg" alt="Chronicle Hive" onerror="this.style.display='none'">
       <div class="brand-title">
-        <select id="mobChannelSelect" onchange="onMobChannelChange(this.value)" style="background:#14172b;color:#00ff88;border:1px solid #00e5ff;padding:5px 8px;border-radius:8px;font-size:13px;font-weight:800;outline:none;">
+        <select id="mobChannelSelect" onchange="onMobChannelChange(this.value)" style="background:#14172b;color:#00ff88;border:1px solid #00e5ff;padding:8px 12px;border-radius:10px;font-size:14px;font-weight:800;outline:none;cursor:pointer;">
           <option value="chronicle_hive">🏛️ Chronicle Hive</option>
           <option value="astra_void">🌌 Astra Void</option>
           <option value="psyche_decoded">🧠 Psyche Decoded</option>
           <option value="empire_pulse">💰 Empire Pulse</option>
         </select>
-        <p style="margin-top:3px;"><span id="connDot">🟢</span> 7/24 Bulut Aktif</p>
+        <p style="margin-top:4px;"><span id="connDot">🟢</span> 7/24 Bulut Aktif</p>
       </div>
     </div>
     <button class="refresh-btn" onclick="loadAllData(true)">🔄</button>
@@ -326,6 +373,14 @@
   <div class="toast" id="toastBox"></div>
 
   <div class="container">
+
+    <!-- 4-CHANNEL HORIZONTAL ONE-TAP SWITCHER -->
+    <div class="channel-pill-bar" id="channelPillBar">
+      <button class="channel-pill active" data-ch="chronicle_hive" onclick="selectChannelPill('chronicle_hive')">🏛️ Chronicle Hive</button>
+      <button class="channel-pill" data-ch="astra_void" onclick="selectChannelPill('astra_void')">🌌 Astra Void</button>
+      <button class="channel-pill" data-ch="psyche_decoded" onclick="selectChannelPill('psyche_decoded')">🧠 Psyche Decoded</button>
+      <button class="channel-pill" data-ch="empire_pulse" onclick="selectChannelPill('empire_pulse')">💰 Empire Pulse</button>
+    </div>
 
     <!-- QUICK STATS ROW -->
     <div class="stats-row">
@@ -588,12 +643,35 @@
     let activeChannelId = localStorage.getItem('ch_active_channel') || 'chronicle_hive';
     document.getElementById('mobChannelSelect').value = activeChannelId;
 
+    function syncChannelPills(val) {
+      document.querySelectorAll('.channel-pill').forEach(btn => {
+        btn.classList.toggle('active', btn.dataset.ch === val);
+      });
+      const sel = document.getElementById('mobChannelSelect');
+      if (sel) sel.value = val;
+    }
+
+    function selectChannelPill(chId) {
+      if (activeChannelId === chId) return;
+      onMobChannelChange(chId);
+    }
+
     function onMobChannelChange(val) {
       activeChannelId = val;
       localStorage.setItem('ch_active_channel', val);
-      showToast('📺 Kanal değiştirildi: ' + val);
+      syncChannelPills(val);
+      const names = {
+        'chronicle_hive': '🏛️ Chronicle Hive',
+        'astra_void': '🌌 Astra Void',
+        'psyche_decoded': '🧠 Psyche Decoded',
+        'empire_pulse': '💰 Empire Pulse'
+      };
+      showToast(`📺 Aktif Kanal: ${names[val] || val}`);
       loadAllData(true);
     }
+
+    // Initial pill sync
+    syncChannelPills(activeChannelId);
 
     async function triggerCloudWorkflow(mode, customTopicOverride = null) {
       const { owner, repo, token } = getCfg();
