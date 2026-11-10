@@ -10,7 +10,7 @@
   <meta http-equiv="Expires" content="0">
   <script>
     // Self-update: iOS home-screen apps cache old HTML aggressively.
-    window.APP_VERSION = '2026.11.10-v6';
+    window.APP_VERSION = '2026.11.10-v7';
     (function checkUpdate() {
       fetch('version.json?t=' + Date.now(), { cache: 'no-store' })
         .then(r => r.ok ? r.json() : null)
@@ -23,10 +23,16 @@
     })();
   </script>
   <meta name="apple-mobile-web-app-title" content="YouTube Otomasyonu">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="theme-color" content="#0b0c14">
-  <link rel="manifest" href="manifest.json">
-  <link rel="apple-touch-icon" sizes="180x180" href="yt-icon-180.png?v=5">
-  <link rel="icon" type="image/png" href="icon.png?v=4">
+  <link rel="manifest" href="manifest.json?v=7">
+  <link rel="apple-touch-icon" href="apple-touch-icon.png?v=7">
+  <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png?v=7">
+  <link rel="apple-touch-icon-precomposed" href="apple-touch-icon.png?v=7">
+  <link rel="icon" type="image/png" sizes="192x192" href="icon-192.png?v=7">
+  <link rel="icon" type="image/png" sizes="512x512" href="icon.png?v=7">
+  <link rel="shortcut icon" href="apple-touch-icon.png?v=7">
   <title>YouTube Otomasyonu</title>
   <style>
     :root {
