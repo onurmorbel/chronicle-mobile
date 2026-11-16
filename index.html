@@ -807,17 +807,23 @@
         const vBox = document.getElementById('mobileVideoList');
         vBox.innerHTML = '';
         videos.slice().reverse().forEach(v => {
-          const isPending = v.scheduled_for && v.scheduled_for !== 'Immediate Public' && new Date(v.scheduled_for.replace(' ', 'T')) > new Date();
+          const isPending = v.is_scheduled_pending !== undefined
+            ? v.is_scheduled_pending
+            : (v.scheduled_for && v.scheduled_for !== 'Immediate Public' && new Date(v.scheduled_for.replace(' ', 'T')) > new Date() && (v.live_views || 0) === 0);
           const sched = isPending
             ? `<span class="badge badge-amber">⏳ Planlandı: ${v.scheduled_for}</span>`
             : `<span class="badge badge-green">🟢 Yayında</span>`;
+          const viewsVal = v.live_views_formatted ?? v.live_views ?? 0;
+          const likesVal = v.live_likes ?? 0;
           const item = document.createElement('div');
           item.className = 'vid-item';
           item.innerHTML = `
             <div class="vid-title">${v.title}</div>
-            <div class="vid-meta">
+            <div class="vid-meta" style="flex-wrap:wrap; gap:6px;">
               ${sched}
-              <a href="${v.url}" target="_blank" style="color:var(--cyan);font-weight:700;text-decoration:none;">▶ YouTube'da Aç</a>
+              <span class="badge" style="background:rgba(0,229,255,0.12);color:#00e5ff;border:1px solid rgba(0,229,255,0.3);">👁️ ${viewsVal}</span>
+              <span class="badge" style="background:rgba(255,183,77,0.12);color:#ffb74d;">👍 ${likesVal}</span>
+              <a href="${v.url}" target="_blank" style="color:var(--cyan);font-weight:700;text-decoration:none;margin-left:auto;">▶ YouTube</a>
             </div>
           `;
           vBox.appendChild(item);
